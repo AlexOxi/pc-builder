@@ -1,11 +1,9 @@
-// Import the functions you need from the SDKs you need
+// Firebase configuration (currently not used in the app)
+// This file is kept for future Firebase features
+
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBaw5Dnz_CUB_uTqSyDI8sMpGkkhXm2vdM",
   authDomain: "pc-builder-533f2.firebaseapp.com",
@@ -18,5 +16,17 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
+
+// Initialize Analytics safely (only in production/HTTPS)
+let analytics: ReturnType<typeof getAnalytics> | null = null;
+try {
+  if (typeof window !== "undefined" && window.location.protocol === "https:") {
+    analytics = getAnalytics(app);
+  }
+} catch (error) {
+  // Analytics not available (e.g., localhost), continue without it
+  console.debug("Firebase Analytics not available:", error);
+}
+
+export { analytics };
 
