@@ -6,11 +6,21 @@ const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
 
-// Simple CORS so the frontend (e.g., Vite on 5173) can call this API.
-app.use((_, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+// CORS configuration - allows frontend from any origin (can be restricted in production)
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["*"];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes("*") || (origin && allowedOrigins.includes(origin))) {
+    res.header("Access-Control-Allow-Origin", origin || "*");
+  }
   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
