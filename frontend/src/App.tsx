@@ -120,7 +120,7 @@ function GetStartedPage() {
 function StartFormPage() {
   const [useCase, setUseCase] = useState("Gaming");
   const [specs, setSpecs] = useState("");
-  const [budget, setBudget] = useState("50");
+  const [budget, setBudget] = useState("1500");
   const [caseType, setCaseType] = useState("Mid tower");
   const [prefGlass, setPrefGlass] = useState(false);
   const [prefRgb, setPrefRgb] = useState(false);
@@ -184,12 +184,13 @@ function StartFormPage() {
             <div className="space-y-2">
               <label className="text-sm text-slate-200 flex items-center justify-between">
                 <span>Budget</span>
-                <span className="text-xs text-slate-400">$0–100</span>
+                <span className="text-xs font-semibold text-blue-400">${Number(budget).toLocaleString()}</span>
               </label>
               <input
                 type="range"
-                min={0}
-                max={100}
+                min={500}
+                max={5000}
+                step={100}
                 value={Number(budget)}
                 onChange={(e) => {
                   setBudget(e.target.value);
@@ -197,6 +198,11 @@ function StartFormPage() {
                 }}
                 className="w-full accent-blue-400"
               />
+              <div className="flex justify-between text-xs text-slate-400">
+                <span>$500</span>
+                <span>$2,750</span>
+                <span>$5,000</span>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -442,7 +448,7 @@ function BuildPage() {
         prefs.games ? `Games: ${prefs.games}` : "",
         prefs.resolution ? `Resolution: ${prefs.resolution}` : "",
         prefs.fps ? `Target FPS: ${prefs.fps}` : "",
-        prefs.budget ? `Budget slider: ${prefs.budget}` : "",
+        prefs.budget ? `Budget: $${Number(prefs.budget).toLocaleString()}` : "",
         prefs.caseType ? `Case type: ${prefs.caseType}` : "",
         prefs.prefGlass ? "Prefers tempered glass" : "",
         prefs.prefRgb ? "Wants RGB" : "",
