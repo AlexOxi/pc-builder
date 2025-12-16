@@ -359,10 +359,13 @@ function GamingPage() {
 type BuildItem = { part: string; model: string; price: string; note?: string };
 
 function BuildPage() {
-  const apiBase = useMemo(
-    () => import.meta.env.VITE_API_URL || "http://localhost:3333",
-    []
-  );
+  const apiBase = useMemo(() => {
+    const url = import.meta.env.VITE_API_URL || "http://localhost:3333";
+    if (!import.meta.env.VITE_API_URL && window.location.protocol === "https:") {
+      console.warn("VITE_API_URL not set! API calls will fail. Please set it in Vercel environment variables.");
+    }
+    return url;
+  }, []);
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<string | null>(null);
   const prefs = useMemo(() => loadPrefs(), []);
@@ -779,10 +782,13 @@ function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const apiBase = useMemo(
-    () => import.meta.env.VITE_API_URL || "http://localhost:3333",
-    []
-  );
+  const apiBase = useMemo(() => {
+    const url = import.meta.env.VITE_API_URL || "http://localhost:3333";
+    if (!import.meta.env.VITE_API_URL && window.location.protocol === "https:") {
+      console.warn("VITE_API_URL not set! API calls will fail. Please set it in Vercel environment variables.");
+    }
+    return url;
+  }, []);
 
   const sendMessage = async () => {
     const trimmed = input.trim();
