@@ -363,7 +363,18 @@ function GamingPage() {
   );
 }
 
-type BuildItem = { part: string; model: string; price: string; note?: string };
+type BuildItem = { 
+  part: string; 
+  model: string; 
+  price: string; 
+  note?: string;
+  link?: string;
+};
+
+function generateAlzaLink(part: string, model: string): string {
+  const searchQuery = encodeURIComponent(`${part} ${model}`);
+  return `https://www.alza.sk/search.htm?exps=${searchQuery}`;
+}
 
 function BuildPage() {
   const navigate = useNavigate();
@@ -374,14 +385,14 @@ function BuildPage() {
   const [initialized, setInitialized] = useState(false);
 
   const fallbackBuild: BuildItem[] = [
-    { part: "CPU", model: "Intel Core i5-14600K", price: "$260", note: "Great 1440p gaming; strong single-core." },
-    { part: "GPU", model: "NVIDIA RTX 4070 Super", price: "$549", note: "High FPS at 1440p; DLSS 3." },
-    { part: "RAM", model: "32GB (2x16) DDR5-6000", price: "$110", note: "Plenty for modern games + multitask." },
-    { part: "Storage", model: "1TB NVMe Gen4 SSD", price: "$90", note: "Fast load times; room for top titles." },
-    { part: "Motherboard", model: "Z790 WiFi ATX", price: "$190", note: "PCIe Gen4, good VRMs, WiFi 6." },
-    { part: "PSU", model: "750W 80+ Gold (fully modular)", price: "$100", note: "Headroom for GPU; efficient." },
-    { part: "Case", model: "Mid-tower w/ airflow front", price: "$110", note: "Good thermals; tempered glass." },
-    { part: "Cooling", model: "240mm AIO / dual tower air", price: "$90", note: "Keeps CPU cool and quiet." },
+    { part: "CPU", model: "Intel Core i5-14600K", price: "$260", note: "Great 1440p gaming; strong single-core.", link: generateAlzaLink("CPU", "Intel Core i5-14600K") },
+    { part: "GPU", model: "NVIDIA RTX 4070 Super", price: "$549", note: "High FPS at 1440p; DLSS 3.", link: generateAlzaLink("GPU", "RTX 4070 Super") },
+    { part: "RAM", model: "32GB (2x16) DDR5-6000", price: "$110", note: "Plenty for modern games + multitask.", link: generateAlzaLink("RAM", "32GB DDR5-6000") },
+    { part: "Storage", model: "1TB NVMe Gen4 SSD", price: "$90", note: "Fast load times; room for top titles.", link: generateAlzaLink("SSD", "1TB NVMe Gen4") },
+    { part: "Motherboard", model: "Z790 WiFi ATX", price: "$190", note: "PCIe Gen4, good VRMs, WiFi 6.", link: generateAlzaLink("Motherboard", "Z790 WiFi") },
+    { part: "PSU", model: "750W 80+ Gold (fully modular)", price: "$100", note: "Headroom for GPU; efficient.", link: generateAlzaLink("PSU", "750W 80+ Gold") },
+    { part: "Case", model: "Mid-tower w/ airflow front", price: "$110", note: "Good thermals; tempered glass.", link: generateAlzaLink("Case", "Mid-tower") },
+    { part: "Cooling", model: "240mm AIO / dual tower air", price: "$90", note: "Keeps CPU cool and quiet.", link: generateAlzaLink("CPU Cooler", "240mm AIO") },
   ];
 
   const [buildItems, setBuildItems] = useState<BuildItem[]>(fallbackBuild);
@@ -403,6 +414,7 @@ function BuildPage() {
             model: String(b.model ?? b.item ?? ""),
             price: String(b.price ?? ""),
             note: b.note ? String(b.note) : undefined,
+            link: b.link || generateAlzaLink(String(b.part ?? b.name ?? ""), String(b.model ?? b.item ?? "")),
           }))
           .filter((b: BuildItem) => b.part && b.model);
         if (mapped.length) {
@@ -424,7 +436,13 @@ function BuildPage() {
         const regex = new RegExp(`^${label}[:\\-]?\\s*(.+)$`, "i");
         const m = line.match(regex);
         if (m) {
-          found.push({ part: label, model: m[1], price: "", note: undefined });
+          found.push({ 
+            part: label, 
+            model: m[1], 
+            price: "", 
+            note: undefined,
+            link: generateAlzaLink(label, m[1])
+          });
           break;
         }
       }
@@ -518,7 +536,19 @@ function BuildPage() {
                       <span className="font-semibold">{item.part}</span>
                       <span className="text-slate-200">{item.price}</span>
                     </div>
-                    <div className="text-slate-200">{item.model}</div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-200">{item.model}</span>
+                      {item.link && (
+                        <a
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-400 hover:text-blue-300 underline"
+                        >
+                          View on Alza.sk →
+                        </a>
+                      )}
+                    </div>
                     {item.note && (
                       <div className="text-xs text-slate-400">{item.note}</div>
                     )}
