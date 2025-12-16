@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { initRoutes } from "./routes";
 
 const app = express();
@@ -11,7 +11,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : ["*"];
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes("*") || (origin && allowedOrigins.includes(origin))) {
     res.header("Access-Control-Allow-Origin", origin || "*");
