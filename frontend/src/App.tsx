@@ -364,7 +364,8 @@ function BuildPage() {
     if (!import.meta.env.VITE_API_URL && window.location.protocol === "https:") {
       console.warn("VITE_API_URL not set! API calls will fail. Please set it in Vercel environment variables.");
     }
-    return url;
+    // Remove trailing slash to avoid double slashes
+    return url.replace(/\/+$/, "");
   }, []);
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<string | null>(null);
