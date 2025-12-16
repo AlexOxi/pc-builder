@@ -555,7 +555,7 @@ function BuildPage() {
                 {prefs.games && <div>Games: {prefs.games}</div>}
                 {prefs.resolution && <div>Resolution: {prefs.resolution}</div>}
                 {prefs.fps && <div>Target FPS: {prefs.fps}</div>}
-                {prefs.budget && <div>Budget slider: {prefs.budget}</div>}
+                {prefs.budget && <div>Budget: ${Number(prefs.budget).toLocaleString()}</div>}
                 {prefs.caseType && <div>Case type: {prefs.caseType}</div>}
                 {prefs.prefGlass && <div>Prefers tempered glass</div>}
                 {prefs.prefRgb && <div>Wants RGB</div>}
