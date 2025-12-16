@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 import "./App.css";
+import { useApi } from "./useApi";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -37,15 +39,15 @@ function TopBar() {
   return (
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 text-sm text-slate-200">
       <div className="flex items-center gap-2">
-        <a
-          href="/help"
+        <Link
+          to="/help"
           className="flex items-center gap-2 rounded-full border border-slate-500/70 bg-black/40 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-slate-200 hover:text-white"
         >
           <span className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-400 text-sm">
             ?
           </span>
           <span>Help</span>
-        </a>
+        </Link>
       </div>
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
@@ -97,18 +99,18 @@ function GetStartedPage() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <a
-                href="/start"
+              <Link
+                to="/start"
                 className="w-full rounded-xl bg-slate-800 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent sm:w-auto"
               >
-                Let’s Get Started
-              </a>
-              <a
-                href="/chat"
+                Let's Get Started
+              </Link>
+              <Link
+                to="/chat"
                 className="w-full rounded-xl border border-slate-500/60 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:border-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent sm:w-auto"
               >
                Test
-              </a>
+              </Link>
             </div>
           </div>
         </section>
@@ -118,6 +120,7 @@ function GetStartedPage() {
 }
 
 function StartFormPage() {
+  const navigate = useNavigate();
   const [useCase, setUseCase] = useState("Gaming");
   const [specs, setSpecs] = useState("");
   const [budget, setBudget] = useState("1500");
@@ -258,13 +261,10 @@ function StartFormPage() {
             </p>
             <button
               type="button"
-              onClick={() =>
-                (window.location.href =
-                  useCase === "Gaming" ? "/gaming" : "/narrow")
-              }
+              onClick={() => navigate(useCase === "Gaming" ? "/gaming" : "/narrow")}
               className="w-full max-w-xs rounded-xl bg-slate-800 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent"
             >
-              Let’s Go
+              Let's Go
             </button>
           </div>
         </section>
@@ -274,6 +274,7 @@ function StartFormPage() {
 }
 
 function GamingPage() {
+  const navigate = useNavigate();
   const [games, setGames] = useState("");
   const [resolution, setResolution] = useState("1080p");
   const [fps, setFps] = useState("60 FPS");
@@ -350,7 +351,7 @@ function GamingPage() {
 
           <div className="pt-4">
             <button
-              onClick={() => (window.location.href = "/build")}
+              onClick={() => navigate("/build")}
               className="w-full max-w-xs rounded-xl bg-slate-800 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent"
             >
               Let’s See the PC
@@ -365,17 +366,11 @@ function GamingPage() {
 type BuildItem = { part: string; model: string; price: string; note?: string };
 
 function BuildPage() {
-  const apiBase = useMemo(() => {
-    const url = import.meta.env.VITE_API_URL || "http://localhost:3333";
-    if (!import.meta.env.VITE_API_URL && window.location.protocol === "https:") {
-      console.warn("VITE_API_URL not set! API calls will fail. Please set it in Vercel environment variables.");
-    }
-    // Remove trailing slash to avoid double slashes
-    return url.replace(/\/+$/, "");
-  }, []);
+  const navigate = useNavigate();
+  const { callApi } = useApi();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<string | null>(null);
-  const prefs = useMemo(() => loadPrefs(), []);
+  const prefs = loadPrefs();
   const [initialized, setInitialized] = useState(false);
 
   const fallbackBuild: BuildItem[] = [
@@ -444,25 +439,21 @@ function BuildPage() {
     setResult(null);
     try {
       const parts = [
-        prefs.useCase ? `Use case: ${prefs.useCase}` : "",
-        prefs.games ? `Games: ${prefs.games}` : "",
-        prefs.resolution ? `Resolution: ${prefs.resolution}` : "",
-        prefs.fps ? `Target FPS: ${prefs.fps}` : "",
-        prefs.budget ? `Budget: $${Number(prefs.budget).toLocaleString()}` : "",
-        prefs.caseType ? `Case type: ${prefs.caseType}` : "",
-        prefs.prefGlass ? "Prefers tempered glass" : "",
-        prefs.prefRgb ? "Wants RGB" : "",
-        prefs.specs ? `Extra specs: ${prefs.specs}` : "",
+        prefs.useCase && `Use case: ${prefs.useCase}`,
+        prefs.games && `Games: ${prefs.games}`,
+        prefs.resolution && `Resolution: ${prefs.resolution}`,
+        prefs.fps && `Target FPS: ${prefs.fps}`,
+        prefs.budget && `Budget: $${Number(prefs.budget).toLocaleString()}`,
+        prefs.caseType && `Case type: ${prefs.caseType}`,
+        prefs.prefGlass && "Prefers tempered glass",
+        prefs.prefRgb && "Wants RGB",
+        prefs.specs && `Extra specs: ${prefs.specs}`,
       ]
         .filter(Boolean)
         .join("\n");
 
-      const url = `${apiBase}/chat`;
-      console.log("Calling API:", url);
-      
-      const response = await fetch(url, {
+      const data = await callApi("/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
             {
@@ -475,24 +466,13 @@ function BuildPage() {
           ],
         }),
       });
-      
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        const msg = err?.error || `API error: ${response.status} - ${response.statusText}`;
-        console.error("API Error:", { status: response.status, url, error: err });
-        throw new Error(msg);
-      }
-      const data = (await response.json()) as { message?: string };
-      const msg = data.message ?? "(no response)";
+
+      const msg = data.message || "(no response)";
       setResult(msg);
       parseAIResult(msg);
     } catch (err) {
-      console.error(err);
-      alert(
-        err instanceof Error
-          ? err.message
-          : "Request failed. Check console for details."
-      );
+      console.error("Build generation failed:", err);
+      alert(err instanceof Error ? err.message : "Failed to generate build");
     } finally {
       setLoading(false);
     }
@@ -570,7 +550,7 @@ function BuildPage() {
               </p>
               <div className="mt-4 flex flex-col gap-3">
                 <button
-                  onClick={() => (window.location.href = "/start")}
+                  onClick={() => navigate("/start")}
                   className="rounded-lg border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300"
                 >
                   Adjust specs
@@ -583,7 +563,7 @@ function BuildPage() {
                   {loading ? "Refreshing…" : "Regenerate with AI"}
                 </button>
                 <button
-                  onClick={() => (window.location.href = "/chat")}
+                  onClick={() => navigate("/chat")}
                   className="rounded-lg border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300"
                 >
                   Chat about this build
@@ -614,6 +594,7 @@ function BuildPage() {
 }
 
 function HelpPage() {
+  const navigate = useNavigate();
   const faqs = [
     {
       q: "What parts do I need to build a gaming PC?",
@@ -669,13 +650,13 @@ function HelpPage() {
 
         <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-300">
           <button
-            onClick={() => (window.location.href = "/start")}
+            onClick={() => navigate("/start")}
             className="rounded-lg border border-slate-600 px-4 py-2 font-semibold text-slate-100 transition hover:border-slate-300"
           >
             Go start a build
           </button>
           <button
-            onClick={() => (window.location.href = "/chat")}
+            onClick={() => navigate("/chat")}
             className="rounded-lg border border-slate-600 px-4 py-2 font-semibold text-slate-100 transition hover:border-slate-300"
           >
             Ask the AI chat
@@ -687,6 +668,7 @@ function HelpPage() {
 }
 
 function NarrowSpecsPage() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0c2c] via-[#0e133b] to-[#0f0f17] text-slate-50">
       <TopBar />
@@ -766,13 +748,13 @@ function NarrowSpecsPage() {
             </div>
             <div className="flex items-center gap-3 pt-2">
               <button
-                onClick={() => (window.location.href = "/")}
+                onClick={() => navigate("/")}
                 className="rounded-lg border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300"
               >
                 Back
               </button>
               <button
-                onClick={() => (window.location.href = "/chat")}
+                onClick={() => navigate("/chat")}
                 className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
               >
                 Continue to AI Chat
@@ -786,17 +768,11 @@ function NarrowSpecsPage() {
 }
 
 function ChatPage() {
+  const navigate = useNavigate();
+  const { callApi } = useApi();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const apiBase = useMemo(() => {
-    const url = import.meta.env.VITE_API_URL || "http://localhost:3333";
-    if (!import.meta.env.VITE_API_URL && window.location.protocol === "https:") {
-      console.warn("VITE_API_URL not set! API calls will fail. Please set it in Vercel environment variables.");
-    }
-    // Remove trailing slash to avoid double slashes
-    return url.replace(/\/+$/, "");
-  }, []);
 
   const sendMessage = async () => {
     const trimmed = input.trim();
@@ -811,32 +787,16 @@ function ChatPage() {
     setLoading(true);
 
     try {
-      const url = `${apiBase}/chat`;
-      console.log("Calling API:", url);
-      
-      const response = await fetch(url, {
+      const data = await callApi("/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: nextMessages }),
       });
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        const msg = err?.error || `API error: ${response.status} - ${response.statusText}`;
-        console.error("API Error:", { status: response.status, url, error: err });
-        throw new Error(msg);
-      }
-
-      const data = (await response.json()) as { message?: string };
-      const text = data.message ?? "(no response)";
+      const text = data.message || "(no response)";
       setMessages([...nextMessages, { role: "assistant", content: text }]);
     } catch (err) {
       console.error(err);
-      alert(
-        err instanceof Error
-          ? err.message
-          : "Request failed. Check console for details.",
-      );
+      alert(err instanceof Error ? err.message : "Failed to send message");
     } finally {
       setLoading(false);
     }
@@ -849,7 +809,7 @@ function ChatPage() {
           <h1 className="text-xl font-semibold">PC Builder AI Chat</h1>
           <div className="flex items-center gap-3 text-xs text-slate-500">
             <button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => navigate("/")}
               className="rounded-md border px-2 py-1 text-slate-600 hover:bg-slate-100"
             >
               Back to Home
@@ -911,14 +871,19 @@ function ChatPage() {
 }
 
 function App() {
-  const path = window.location.pathname;
-  if (path.startsWith("/chat")) return <ChatPage />;
-  if (path.startsWith("/gaming")) return <GamingPage />;
-  if (path.startsWith("/build")) return <BuildPage />;
-  if (path.startsWith("/help")) return <HelpPage />;
-  if (path.startsWith("/start")) return <StartFormPage />;
-  if (path.startsWith("/narrow")) return <NarrowSpecsPage />;
-  return <GetStartedPage />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<GetStartedPage />} />
+        <Route path="/start" element={<StartFormPage />} />
+        <Route path="/gaming" element={<GamingPage />} />
+        <Route path="/narrow" element={<NarrowSpecsPage />} />
+        <Route path="/build" element={<BuildPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/help" element={<HelpPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
