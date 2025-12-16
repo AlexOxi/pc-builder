@@ -7,7 +7,14 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 
 export function initRoutes(app: Express) {
   app.get("/", (_req: Request, res: Response) => {
-    res.send("Hello from TypeScript + Express!");
+    res.json({ 
+      message: "PC Builder API is running!",
+      endpoints: ["/", "/chat (POST)", "/ai (GET)"]
+    });
+  });
+
+  app.get("/health", (_req: Request, res: Response) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
   app.get("/oxi", (_req: Request, res: Response) => {

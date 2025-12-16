@@ -447,7 +447,10 @@ function BuildPage() {
         .filter(Boolean)
         .join("\n");
 
-      const response = await fetch(`${apiBase}/chat`, {
+      const url = `${apiBase}/chat`;
+      console.log("Calling API:", url);
+      
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -462,9 +465,11 @@ function BuildPage() {
           ],
         }),
       });
+      
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
-        const msg = err?.error || `API error: ${response.status}`;
+        const msg = err?.error || `API error: ${response.status} - ${response.statusText}`;
+        console.error("API Error:", { status: response.status, url, error: err });
         throw new Error(msg);
       }
       const data = (await response.json()) as { message?: string };
@@ -792,7 +797,10 @@ function ChatPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${apiBase}/chat`, {
+      const url = `${apiBase}/chat`;
+      console.log("Calling API:", url);
+      
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: nextMessages }),
@@ -800,7 +808,8 @@ function ChatPage() {
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
-        const msg = err?.error || `API error: ${response.status}`;
+        const msg = err?.error || `API error: ${response.status} - ${response.statusText}`;
+        console.error("API Error:", { status: response.status, url, error: err });
         throw new Error(msg);
       }
 
