@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../useApi";
-import { Message } from "../types";
+import type { Message } from "../types";
 
 export default function ChatPage() {
   const navigate = useNavigate();

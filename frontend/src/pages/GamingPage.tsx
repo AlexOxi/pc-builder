@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import { loadPrefs, savePrefs } from "../utils/storage";
-import { StoredPrefs } from "../types";
+import type { StoredPrefs } from "../types";
 
 export default function GamingPage() {
   const navigate = useNavigate();

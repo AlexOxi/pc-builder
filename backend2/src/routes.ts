@@ -33,6 +33,16 @@ export function initRoutes(app: Express) {
 
   // POST /chat expects: { messages: [{ role: "user" | "assistant", content: string }] }
   app.post("/chat", async (req: Request, res: Response) => {
+    const client = openaiDirect;
+    if (!client) {
+      return res
+        .status(503)
+        .json({
+          error:
+            "OpenAI API key not configured. Add OPENAI_API_KEY to backend2/.env to enable build generation and chat.",
+        });
+    }
+
     const messages = req.body?.messages as ChatMessage[] | undefined;
 
     if (!Array.isArray(messages) || messages.length === 0) {
@@ -53,7 +63,7 @@ export function initRoutes(app: Express) {
     }
 
     try {
-      const completion = await openaiDirect.chat.completions.create({
+      const completion = await client.chat.completions.create({
         model: "gpt-4o-mini",
         messages: normalized,
       });

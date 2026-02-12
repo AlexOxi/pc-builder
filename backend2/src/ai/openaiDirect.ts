@@ -6,11 +6,12 @@ dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 if (!OPENAI_API_KEY) {
-  console.error("OPENAI_API_KEY is not set in environment variables.");
-  process.exit(1);
+  console.warn(
+    "OPENAI_API_KEY is not set. /chat will return 503 until you add it to .env",
+  );
 }
 
-export const openaiDirect = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-});
+export const openaiDirect = OPENAI_API_KEY
+  ? new OpenAI({ apiKey: OPENAI_API_KEY })
+  : null;
 

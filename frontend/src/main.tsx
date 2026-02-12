@@ -45,11 +45,11 @@ if (!rootElement) {
 
 try {
   createRoot(rootElement).render(
-    <StrictMode>
+  <StrictMode>
       <ErrorBoundary>
-        <App />
+    <App />
       </ErrorBoundary>
-    </StrictMode>,
+  </StrictMode>,
   );
 } catch (error) {
   console.error('Failed to render app:', error);

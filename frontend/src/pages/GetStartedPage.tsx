@@ -7,21 +7,20 @@ export default function GetStartedPage() {
       <TopBar />
 
       <main className="mx-auto flex max-w-6xl flex-col gap-10 px-6 pb-16">
-        <div className="text-center pt-4">
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight">
+        <div className="flex items-center justify-center pt-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-blue-400/60 bg-gradient-to-br from-blue-500/40 via-indigo-500/40 to-slate-900/60 text-2xl font-bold tracking-tight text-slate-100 shadow-lg">
+            <span className="sr-only">PC Builder</span>
+            <span>PB</span>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <h1 className="mt-4 text-5xl sm:text-6xl font-bold tracking-tight">
             PC Builder
           </h1>
         </div>
 
-        <section className="grid items-center gap-10 rounded-2xl bg-gradient-to-br from-[#0b0c2c]/50 via-[#0e133b]/60 to-[#0f0f17]/70 p-8 shadow-2xl ring-1 ring-white/5 md:grid-cols-2">
-          <div className="overflow-hidden rounded-xl border border-white/5 bg-black/20 shadow-xl object-contain max-h-[440px] max-w-[440px]">
-            <img
-              src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="PC build"
-              className="h-full w-full object-contain"
-            />
-          </div>
-
+        <section className="mt-6 rounded-2xl bg-gradient-to-br from-[#0b0c2c]/50 via-[#0e133b]/60 to-[#0f0f17]/70 p-8 shadow-2xl ring-1 ring-white/5">
           <div className="flex flex-col gap-6 text-left">
             <div className="space-y-4">
               <h2 className="text-4xl font-semibold leading-tight text-slate-50">
@@ -32,18 +31,12 @@ export default function GetStartedPage() {
                 list optimized for performance, thermals, and budget.
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <Link
                 to="/start"
                 className="w-full rounded-xl bg-slate-800 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent sm:w-auto"
               >
                 Let's Get Started
-              </Link>
-              <Link
-                to="/chat"
-                className="w-full rounded-xl border border-slate-500/60 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:border-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent sm:w-auto"
-              >
-                Test
               </Link>
             </div>
           </div>

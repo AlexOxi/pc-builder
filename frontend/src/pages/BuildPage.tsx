@@ -4,7 +4,7 @@ import TopBar from "../components/TopBar";
 import { useApi } from "../useApi";
 import { loadPrefs } from "../utils/storage";
 import { generateAlzaLink } from "../utils/alza";
-import { BuildItem } from "../types";
+import type { BuildItem } from "../types";
 
 export default function BuildPage() {
   const navigate = useNavigate();
@@ -222,29 +222,7 @@ export default function BuildPage() {
                 >
                   {loading ? "Refreshing…" : "Regenerate with AI"}
                 </button>
-                <button
-                  onClick={() => navigate("/chat")}
-                  className="rounded-lg border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300"
-                >
-                  Chat about this build
-                </button>
               </div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-black/30 p-4 text-sm text-slate-100 shadow-inner h-[200px] overflow-auto">
-              <h4 className="text-sm font-semibold mb-2">AI Notes</h4>
-              {loading && <p className="text-slate-300">Thinking…</p>}
-              {!loading && result && (
-                <pre className="whitespace-pre-wrap break-words text-slate-100">
-                  {result}
-                </pre>
-              )}
-              {!loading && !result && (
-                <p className="text-slate-400">
-                  Click "Regenerate with AI" for a fresh suggestion based on a
-                  balanced 1440p gaming build.
-                </p>
-              )}
             </div>
           </div>
         </section>

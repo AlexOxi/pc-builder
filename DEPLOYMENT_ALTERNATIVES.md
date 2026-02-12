@@ -92,3 +92,4 @@ Since Railway isn't working, here are better alternatives:
 2. Update backend `ALLOWED_ORIGINS` to include your frontend URL (for CORS)
 3. Test the connection!
 
+

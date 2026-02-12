@@ -1,4 +1,4 @@
-import { StoredPrefs } from "../types";
+import type { StoredPrefs } from "../types";
 
 const STORAGE_KEY = "pcbuilder_prefs";
 
