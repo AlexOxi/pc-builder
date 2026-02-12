@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function TopBar() {
   return (
-    <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 text-sm text-slate-200">
+    <header className="mx-auto flex max-w-6xl items-center px-6 py-4 text-sm text-slate-200">
       <div className="flex items-center gap-2">
         <Link
           to="/help"
@@ -13,14 +13,6 @@ export default function TopBar() {
           </span>
           <span>Help</span>
         </Link>
-      </div>
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">★</span>
-          <span className="text-xs uppercase tracking-wide text-slate-300">
-            Profile
-          </span>
-        </div>
       </div>
     </header>
   );

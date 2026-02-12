@@ -63,12 +63,6 @@ export default function HelpPage() {
             >
               Go start a build
             </button>
-            <button
-              onClick={() => navigate("/chat")}
-              className="rounded-lg border border-slate-600 px-4 py-2 font-semibold text-slate-100 transition hover:border-slate-300"
-            >
-              Ask the AI chat
-            </button>
           </div>
         </main>
       </div>
