@@ -10,7 +10,6 @@ export default function BuildPage() {
   const navigate = useNavigate();
   const { callApi } = useApi();
   const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState<string | null>(null);
   const prefs = loadPrefs();
   const [initialized, setInitialized] = useState(false);
 
@@ -84,7 +83,6 @@ export default function BuildPage() {
 
   const regenerate = async () => {
     setLoading(true);
-    setResult(null);
     try {
       const parts = [
         prefs.useCase && `Use case: ${prefs.useCase}`,
@@ -116,7 +114,6 @@ export default function BuildPage() {
       });
 
       const msg = data.message || "(no response)";
-      setResult(msg);
       parseAIResult(msg);
     } catch (err) {
       console.error("Build generation failed:", err);

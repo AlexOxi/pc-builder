@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ quiet: true });
 import express, { Request, Response, NextFunction } from "express";
 import { initRoutes } from "./routes";
 

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Optional: only needed if you use the Hugging Face route (/ai)
 const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
