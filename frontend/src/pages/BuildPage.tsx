@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
+import { useAuth } from "../contexts/AuthContext";
 import { useApi } from "../useApi";
 import { loadPrefs } from "../utils/storage";
 import { generateAlzaLink } from "../utils/alza";
+import { saveBuild } from "../utils/builds";
 import type { BuildItem } from "../types";
 
 export default function BuildPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { callApi } = useApi();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const prefs = loadPrefs();
   const [initialized, setInitialized] = useState(false);
 
@@ -27,7 +31,7 @@ export default function BuildPage() {
   const [buildItems, setBuildItems] = useState<BuildItem[]>(fallbackBuild);
   const [total, setTotal] = useState("$1,499");
 
-  const parseAIResult = (text: string) => {
+  const parseAIResult = (text: string): { buildItems: BuildItem[]; total: string } | null => {
     const cleaned = text
       .replace(/^```(?:json)?/i, "")
       .replace(/```$/, "")
@@ -47,9 +51,10 @@ export default function BuildPage() {
           }))
           .filter((b: BuildItem) => b.part && b.model);
         if (mapped.length) {
+          const newTotal = json.total ? String(json.total) : "$0";
           setBuildItems(mapped);
-          if (json.total) setTotal(String(json.total));
-          return;
+          setTotal(newTotal);
+          return { buildItems: mapped, total: newTotal };
         }
       }
     } catch {
@@ -65,12 +70,12 @@ export default function BuildPage() {
         const regex = new RegExp(`^${label}[:\\-]?\\s*(.+)$`, "i");
         const m = line.match(regex);
         if (m) {
-          found.push({ 
-            part: label, 
-            model: m[1], 
-            price: "", 
+          found.push({
+            part: label,
+            model: m[1],
+            price: "",
             note: undefined,
-            link: generateAlzaLink(label, m[1])
+            link: generateAlzaLink(label, m[1]),
           });
           break;
         }
@@ -78,7 +83,9 @@ export default function BuildPage() {
     }
     if (found.length) {
       setBuildItems(found);
+      return { buildItems: found, total: "" };
     }
+    return null;
   };
 
   const regenerate = async () => {
@@ -114,7 +121,21 @@ export default function BuildPage() {
       });
 
       const msg = data.message || "(no response)";
-      parseAIResult(msg);
+      const parsed = parseAIResult(msg);
+      if (user && parsed) {
+        setSaving(true);
+        try {
+          await saveBuild(user.uid, {
+            total: parsed.total,
+            buildItems: parsed.buildItems,
+            prefs,
+          });
+        } catch (e) {
+          console.error("Failed to save build:", e);
+        } finally {
+          setSaving(false);
+        }
+      }
     } catch (err) {
       console.error("Build generation failed:", err);
       alert(err instanceof Error ? err.message : "Failed to generate build");
@@ -128,7 +149,6 @@ export default function BuildPage() {
       regenerate();
       setInitialized(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialized]);
 
   return (
@@ -206,6 +226,31 @@ export default function BuildPage() {
                 Prices are rough estimates; confirm with your preferred retailer.
               </p>
               <div className="mt-4 flex flex-col gap-3">
+                {user && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!user) return;
+                      setSaving(true);
+                      try {
+                        await saveBuild(user.uid, {
+                          total,
+                          buildItems,
+                          prefs,
+                        });
+                        alert("Build saved to My builds.");
+                      } catch (e) {
+                        alert(e instanceof Error ? e.message : "Failed to save");
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    disabled={saving}
+                    className="rounded-lg border border-cyan-500/50 bg-cyan-500/10 px-4 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 disabled:opacity-50"
+                  >
+                    {saving ? "Saving…" : "Save to my builds"}
+                  </button>
+                )}
                 <button
                   onClick={() => navigate("/start")}
                   className="rounded-lg border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300"

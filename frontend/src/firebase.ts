@@ -1,30 +1,28 @@
-// Firebase configuration (currently not used in the app)
-// This file is kept for future Firebase features
-
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBaw5Dnz_CUB_uTqSyDI8sMpGkkhXm2vdM",
-  authDomain: "pc-builder-533f2.firebaseapp.com",
-  projectId: "pc-builder-533f2",
-  storageBucket: "pc-builder-533f2.firebasestorage.app",
-  messagingSenderId: "291671942265",
-  appId: "1:291671942265:web:1fd22616879783d97ba0a8",
-  measurementId: "G-EV14VDFF2Z"
+  apiKey: "AIzaSyD_uUjjdWzPqhX79Y7w3utxgn0tcKdjosI",
+  authDomain: "pc-builder-backend.firebaseapp.com",
+  projectId: "pc-builder-backend",
+  storageBucket: "pc-builder-backend.firebasestorage.app",
+  messagingSenderId: "456294698597",
+  appId: "1:456294698597:web:d9678073266b542d7a408c"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Analytics safely (only in production/HTTPS)
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
 let analytics: ReturnType<typeof getAnalytics> | null = null;
 try {
   if (typeof window !== "undefined" && window.location.protocol === "https:") {
     analytics = getAnalytics(app);
   }
 } catch (error) {
-  // Analytics not available (e.g., localhost), continue without it
   console.debug("Firebase Analytics not available:", error);
 }
 

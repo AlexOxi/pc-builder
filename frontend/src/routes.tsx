@@ -6,6 +6,8 @@ import NarrowSpecsPage from "./pages/NarrowSpecsPage";
 import BuildPage from "./pages/BuildPage";
 import ChatPage from "./pages/ChatPage";
 import HelpPage from "./pages/HelpPage";
+import LoginPage from "./pages/LoginPage";
+import MyBuildsPage from "./pages/MyBuildsPage";
 
 export default function AppRoutes() {
   return (
@@ -17,6 +19,8 @@ export default function AppRoutes() {
       <Route path="/build" element={<BuildPage />} />
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/help" element={<HelpPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/my-builds" element={<MyBuildsPage />} />
     </Routes>
   );
 }
