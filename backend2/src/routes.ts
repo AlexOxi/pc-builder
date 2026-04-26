@@ -31,7 +31,6 @@ export function initRoutes(app: Express) {
     res.send(result);
   });
 
-  // POST /chat expects: { messages: [{ role: "user" | "assistant", content: string }] }
   app.post("/chat", async (req: Request, res: Response) => {
     const client = openaiDirect;
     if (!client) {
@@ -73,7 +72,6 @@ export function initRoutes(app: Express) {
 
       res.json({ message: reply });
     } catch (err: any) {
-      // Surface common OpenAI errors so the frontend can display something meaningful.
       const status = err?.status ?? 500;
       const code = err?.code ?? err?.error?.code;
       const message =

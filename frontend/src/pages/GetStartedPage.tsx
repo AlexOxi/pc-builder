@@ -7,9 +7,7 @@ export default function GetStartedPage() {
       <TopBar />
 
       <main className="mx-auto max-w-6xl px-6 pb-20 pt-6">
-        {/* Hero: image + content side by side on large screens */}
         <section className="grid min-h-[70vh] items-center gap-12 rounded-3xl bg-gradient-to-br from-slate-900/80 via-[#0e133b]/90 to-[#0a0b1a] p-8 shadow-2xl ring-1 ring-white/10 md:grid-cols-2 md:gap-16 md:p-12">
-          {/* PC image */}
           <div className="order-2 md:order-1">
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-2xl">
               <img
@@ -21,7 +19,6 @@ export default function GetStartedPage() {
             </div>
           </div>
 
-          {/* Copy + CTA */}
           <div className="order-1 flex flex-col justify-center md:order-2">
             <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-cyan-300">
               <span className="h-2 w-2 rounded-full bg-cyan-400" />

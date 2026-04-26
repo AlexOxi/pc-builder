@@ -1,8 +1,32 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
+import { loadPrefs, savePrefs } from "../utils/storage";
+import type { StoredPrefs } from "../types";
 
 export default function NarrowSpecsPage() {
   const navigate = useNavigate();
+  const [cpuPreference, setCpuPreference] = useState("No preference");
+  const [gpuTarget, setGpuTarget] = useState("Balanced (1080p/1440p)");
+  const [storagePreference, setStoragePreference] = useState("1TB NVMe");
+  const [psuHeadroom, setPsuHeadroom] = useState("750");
+  const [thermalsNoise, setThermalsNoise] = useState("Balanced");
+  const [formFactor, setFormFactor] = useState("Mid tower");
+  const [displayTarget, setDisplayTarget] = useState("1440p 144Hz");
+
+  useEffect(() => {
+    const stored: StoredPrefs = loadPrefs();
+    if (stored.cpuPreference) setCpuPreference(stored.cpuPreference);
+    if (stored.gpuTarget) setGpuTarget(stored.gpuTarget);
+    if (stored.storagePreference) setStoragePreference(stored.storagePreference);
+    if (stored.psuHeadroom) setPsuHeadroom(stored.psuHeadroom);
+    if (stored.thermalsNoise) setThermalsNoise(stored.thermalsNoise);
+    if (stored.formFactor) setFormFactor(stored.formFactor);
+    if (stored.displayTarget) setDisplayTarget(stored.displayTarget);
+  }, []);
+
+  const persist = (update: Partial<StoredPrefs>) => savePrefs(update);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0c2c] via-[#0e133b] to-[#0f0f17] text-slate-50">
       <TopBar />
@@ -20,7 +44,14 @@ export default function NarrowSpecsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-sm text-slate-200">CPU preference</label>
-              <select className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100">
+              <select
+                className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100"
+                value={cpuPreference}
+                onChange={(e) => {
+                  setCpuPreference(e.target.value);
+                  persist({ cpuPreference: e.target.value });
+                }}
+              >
                 <option>No preference</option>
                 <option>Intel</option>
                 <option>AMD</option>
@@ -28,7 +59,14 @@ export default function NarrowSpecsPage() {
             </div>
             <div>
               <label className="text-sm text-slate-200">GPU target</label>
-              <select className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100">
+              <select
+                className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100"
+                value={gpuTarget}
+                onChange={(e) => {
+                  setGpuTarget(e.target.value);
+                  persist({ gpuTarget: e.target.value });
+                }}
+              >
                 <option>Balanced (1080p/1440p)</option>
                 <option>High-end (1440p/4K)</option>
                 <option>Entry</option>
@@ -36,27 +74,50 @@ export default function NarrowSpecsPage() {
             </div>
             <div>
               <label className="text-sm text-slate-200">Storage</label>
-              <select className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100">
+              <select
+                className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100"
+                value={storagePreference}
+                onChange={(e) => {
+                  setStoragePreference(e.target.value);
+                  persist({ storagePreference: e.target.value });
+                }}
+              >
                 <option>1TB NVMe</option>
                 <option>2TB NVMe</option>
                 <option>1TB NVMe + 2TB HDD</option>
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-200">PSU headroom</label>
+              <label className="text-sm text-slate-200">PSU headroom (W)</label>
               <input
                 type="range"
                 min={500}
                 max={1000}
+                step={50}
+                value={Number(psuHeadroom)}
+                onChange={(e) => {
+                  setPsuHeadroom(e.target.value);
+                  persist({ psuHeadroom: e.target.value });
+                }}
                 className="mt-2 w-full accent-blue-400"
               />
+              <div className="mt-1 text-xs text-slate-400">
+                Approx. {psuHeadroom}W target
+              </div>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
               <label className="text-sm text-slate-200">Thermals & noise</label>
-              <select className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100">
+              <select
+                className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100"
+                value={thermalsNoise}
+                onChange={(e) => {
+                  setThermalsNoise(e.target.value);
+                  persist({ thermalsNoise: e.target.value });
+                }}
+              >
                 <option>Quiet first</option>
                 <option>Performance first</option>
                 <option>Balanced</option>
@@ -64,7 +125,14 @@ export default function NarrowSpecsPage() {
             </div>
             <div>
               <label className="text-sm text-slate-200">Form factor</label>
-              <select className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100">
+              <select
+                className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100"
+                value={formFactor}
+                onChange={(e) => {
+                  setFormFactor(e.target.value);
+                  persist({ formFactor: e.target.value });
+                }}
+              >
                 <option>Mid tower</option>
                 <option>Mini ITX</option>
                 <option>Full tower</option>
@@ -74,7 +142,14 @@ export default function NarrowSpecsPage() {
               <label className="text-sm text-slate-200">
                 Display target (for GPU pairing)
               </label>
-              <select className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100">
+              <select
+                className="mt-2 w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-slate-100"
+                value={displayTarget}
+                onChange={(e) => {
+                  setDisplayTarget(e.target.value);
+                  persist({ displayTarget: e.target.value });
+                }}
+              >
                 <option>1080p 144Hz</option>
                 <option>1440p 144Hz</option>
                 <option>4K 60/120Hz</option>
@@ -82,16 +157,16 @@ export default function NarrowSpecsPage() {
             </div>
             <div className="flex items-center gap-3 pt-2">
               <button
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/start")}
                 className="rounded-lg border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300"
               >
                 Back
               </button>
               <button
-                onClick={() => navigate("/chat")}
+                onClick={() => navigate("/build")}
                 className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
               >
-                Continue to AI Chat
+                Continue to build
               </button>
             </div>
           </div>

@@ -8,6 +8,13 @@ export interface StoredPrefs {
   games?: string;
   resolution?: string;
   fps?: string;
+  cpuPreference?: string;
+  gpuTarget?: string;
+  storagePreference?: string;
+  psuHeadroom?: string;
+  thermalsNoise?: string;
+  formFactor?: string;
+  displayTarget?: string;
 }
 
 export interface Message {

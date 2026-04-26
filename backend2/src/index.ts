@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
 
-// CORS configuration - allows frontend from any origin (can be restricted in production)
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
   ? process.env.ALLOWED_ORIGINS.split(",")
   : ["*"];

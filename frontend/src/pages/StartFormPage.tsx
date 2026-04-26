@@ -142,7 +142,7 @@ export default function StartFormPage() {
 
           <div className="flex flex-col items-start gap-10">
             <p className="text-sm text-slate-200/80">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Let's narrow it down a little bit.
+              Choose your options below so we can recommend the right parts for your build.
             </p>
             <button
               type="button"

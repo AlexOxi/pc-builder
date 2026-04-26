@@ -37,7 +37,6 @@ export default function BuildPage() {
       .replace(/```$/, "")
       .trim();
 
-    // Try JSON first
     try {
       const json = JSON.parse(cleaned);
       if (Array.isArray(json.build)) {
@@ -58,10 +57,8 @@ export default function BuildPage() {
         }
       }
     } catch {
-      // ignore JSON parse failure
     }
 
-    // Fallback: regex scan for known parts
     const labels = ["CPU", "GPU", "RAM", "Storage", "Motherboard", "PSU", "Case", "Cooling"];
     const lines = cleaned.split("\n").map((l) => l.trim()).filter(Boolean);
     const found: BuildItem[] = [];
@@ -101,6 +98,13 @@ export default function BuildPage() {
         prefs.prefGlass && "Prefers tempered glass",
         prefs.prefRgb && "Wants RGB",
         prefs.specs && `Extra specs: ${prefs.specs}`,
+        prefs.cpuPreference && `CPU preference: ${prefs.cpuPreference}`,
+        prefs.gpuTarget && `GPU target: ${prefs.gpuTarget}`,
+        prefs.storagePreference && `Storage preference: ${prefs.storagePreference}`,
+        prefs.psuHeadroom && `PSU headroom: ~${prefs.psuHeadroom}W`,
+        prefs.thermalsNoise && `Thermals & noise: ${prefs.thermalsNoise}`,
+        prefs.formFactor && `Form factor: ${prefs.formFactor}`,
+        prefs.displayTarget && `Display target: ${prefs.displayTarget}`,
       ]
         .filter(Boolean)
         .join("\n");
@@ -212,11 +216,32 @@ export default function BuildPage() {
                 {prefs.games && <div>Games: {prefs.games}</div>}
                 {prefs.resolution && <div>Resolution: {prefs.resolution}</div>}
                 {prefs.fps && <div>Target FPS: {prefs.fps}</div>}
-                {prefs.budget && <div>Budget: ${Number(prefs.budget).toLocaleString()}</div>}
+                {prefs.budget && (
+                  <div>Budget: ${Number(prefs.budget).toLocaleString()}</div>
+                )}
                 {prefs.caseType && <div>Case type: {prefs.caseType}</div>}
                 {prefs.prefGlass && <div>Prefers tempered glass</div>}
                 {prefs.prefRgb && <div>Wants RGB</div>}
                 {prefs.specs && <div>Extra specs: {prefs.specs}</div>}
+                {prefs.cpuPreference && (
+                  <div>CPU preference: {prefs.cpuPreference}</div>
+                )}
+                {prefs.gpuTarget && <div>GPU target: {prefs.gpuTarget}</div>}
+                {prefs.storagePreference && (
+                  <div>Storage: {prefs.storagePreference}</div>
+                )}
+                {prefs.psuHeadroom && (
+                  <div>PSU headroom: ~{prefs.psuHeadroom}W</div>
+                )}
+                {prefs.thermalsNoise && (
+                  <div>Thermals & noise: {prefs.thermalsNoise}</div>
+                )}
+                {prefs.formFactor && (
+                  <div>Form factor: {prefs.formFactor}</div>
+                )}
+                {prefs.displayTarget && (
+                  <div>Display target: {prefs.displayTarget}</div>
+                )}
               </div>
               <div className="flex items-center justify-between text-base font-semibold">
                 <span>Estimated total</span>
