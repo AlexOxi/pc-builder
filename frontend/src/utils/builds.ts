@@ -1,11 +1,12 @@
 import {
   addDoc,
   collection,
+  doc,
   getDocs,
   orderBy,
   query,
   serverTimestamp,
-  where,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import type { BuildItem, StoredPrefs } from "../types";
@@ -20,6 +21,11 @@ export interface SavedBuild {
 }
 
 const BUILDS_COLLECTION = "builds";
+const USERS_COLLECTION = "users";
+
+function userBuildsCollection(userId: string) {
+  return collection(db, USERS_COLLECTION, userId, BUILDS_COLLECTION);
+}
 
 export async function saveBuild(
   userId: string,
@@ -29,7 +35,16 @@ export async function saveBuild(
     prefs?: StoredPrefs;
   }
 ): Promise<string> {
-  const docRef = await addDoc(collection(db, BUILDS_COLLECTION), {
+  await setDoc(
+    doc(db, USERS_COLLECTION, userId),
+    {
+      userId,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+
+  const docRef = await addDoc(userBuildsCollection(userId), {
     userId,
     createdAt: serverTimestamp(),
     total: data.total,
@@ -40,11 +55,7 @@ export async function saveBuild(
 }
 
 export async function getUserBuilds(userId: string): Promise<SavedBuild[]> {
-  const q = query(
-    collection(db, BUILDS_COLLECTION),
-    where("userId", "==", userId),
-    orderBy("createdAt", "desc")
-  );
+  const q = query(userBuildsCollection(userId), orderBy("createdAt", "desc"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => {
     const d = doc.data();

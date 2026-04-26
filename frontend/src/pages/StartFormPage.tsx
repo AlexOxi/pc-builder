@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
+import { formatCurrency } from "../utils/format";
 import { loadPrefs, savePrefs } from "../utils/storage";
 import type { StoredPrefs } from "../types";
 
@@ -72,7 +73,9 @@ export default function StartFormPage() {
             <div className="space-y-2">
               <label className="text-sm text-slate-200 flex items-center justify-between">
                 <span>Budget</span>
-                <span className="text-xs font-semibold text-blue-400">${Number(budget).toLocaleString()}</span>
+                <span className="text-xs font-semibold text-blue-400">
+                  {formatCurrency(Number(budget))}
+                </span>
               </label>
               <input
                 type="range"
@@ -87,9 +90,9 @@ export default function StartFormPage() {
                 className="w-full accent-blue-400"
               />
               <div className="flex justify-between text-xs text-slate-400">
-                <span>$500</span>
-                <span>$2,750</span>
-                <span>$5,000</span>
+                <span>{formatCurrency(500)}</span>
+                <span>{formatCurrency(2750)}</span>
+                <span>{formatCurrency(5000)}</span>
               </div>
             </div>
 
@@ -146,7 +149,7 @@ export default function StartFormPage() {
             </p>
             <button
               type="button"
-              onClick={() => navigate(useCase === "Gaming" ? "/gaming" : "/narrow")}
+              onClick={() => navigate(useCase === "Gaming" ? "/gaming" : "/build")}
               className="w-full max-w-xs rounded-xl bg-slate-800 px-6 py-4 text-center text-base font-semibold text-slate-100 transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-transparent"
             >
               Let's Go

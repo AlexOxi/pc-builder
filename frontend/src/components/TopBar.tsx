@@ -1,12 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function TopBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading, logout } = useAuth();
+  const canGoBack = location.pathname !== "/";
 
   return (
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 text-sm text-slate-200">
       <div className="flex items-center gap-2">
+        {canGoBack && (
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="rounded-full border border-slate-500/70 bg-black/40 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-slate-200 hover:text-white"
+          >
+            Back
+          </button>
+        )}
         <Link
           to="/help"
           className="flex items-center gap-2 rounded-full border border-slate-500/70 bg-black/40 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-slate-200 hover:text-white"

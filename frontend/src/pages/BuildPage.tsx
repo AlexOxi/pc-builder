@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import { useAuth } from "../contexts/AuthContext";
 import { useApi } from "../useApi";
+import { formatCurrency } from "../utils/format";
 import { loadPrefs } from "../utils/storage";
 import { generateAlzaLink } from "../utils/alza";
 import { saveBuild } from "../utils/builds";
@@ -17,19 +18,61 @@ export default function BuildPage() {
   const prefs = loadPrefs();
   const [initialized, setInitialized] = useState(false);
 
-  const fallbackBuild: BuildItem[] = [
-    { part: "CPU", model: "Intel Core i5-14600K", price: "$260", note: "Great 1440p gaming; strong single-core.", link: generateAlzaLink("CPU", "Intel Core i5-14600K") },
-    { part: "GPU", model: "NVIDIA RTX 4070 Super", price: "$549", note: "High FPS at 1440p; DLSS 3.", link: generateAlzaLink("GPU", "RTX 4070 Super") },
-    { part: "RAM", model: "32GB (2x16) DDR5-6000", price: "$110", note: "Plenty for modern games + multitask.", link: generateAlzaLink("RAM", "32GB DDR5-6000") },
-    { part: "Storage", model: "1TB NVMe Gen4 SSD", price: "$90", note: "Fast load times; room for top titles.", link: generateAlzaLink("SSD", "1TB NVMe Gen4") },
-    { part: "Motherboard", model: "Z790 WiFi ATX", price: "$190", note: "PCIe Gen4, good VRMs, WiFi 6.", link: generateAlzaLink("Motherboard", "Z790 WiFi") },
-    { part: "PSU", model: "750W 80+ Gold (fully modular)", price: "$100", note: "Headroom for GPU; efficient.", link: generateAlzaLink("PSU", "750W 80+ Gold") },
-    { part: "Case", model: "Mid-tower w/ airflow front", price: "$110", note: "Good thermals; tempered glass.", link: generateAlzaLink("Case", "Mid-tower") },
-    { part: "Cooling", model: "240mm AIO / dual tower air", price: "$90", note: "Keeps CPU cool and quiet.", link: generateAlzaLink("CPU Cooler", "240mm AIO") },
-  ];
+  const buildFromPrefs = (): { buildItems: BuildItem[]; total: string } => {
+    const budget = Number(prefs.budget ?? 1500);
+    const highEnd =
+      prefs.gpuTarget?.includes("High-end") ||
+      prefs.displayTarget?.includes("4K") ||
+      budget >= 2200;
+    const entry = prefs.gpuTarget === "Entry" || budget <= 900;
+    const cpu =
+      prefs.cpuPreference === "AMD"
+        ? highEnd
+          ? "AMD Ryzen 7 7800X3D"
+          : "AMD Ryzen 5 7600"
+        : prefs.cpuPreference === "Intel"
+          ? highEnd
+            ? "Intel Core i7-14700K"
+            : "Intel Core i5-14400F"
+          : highEnd
+            ? "AMD Ryzen 7 7800X3D"
+            : "Intel Core i5-14400F";
+    const gpu = highEnd
+      ? "NVIDIA RTX 4080 Super"
+      : entry
+        ? "NVIDIA RTX 4060"
+        : "NVIDIA RTX 4070 Super";
+    const ram = budget >= 1200 ? "32GB DDR5-6000" : "16GB DDR5-5600";
+    const storage = prefs.storagePreference ?? "1TB NVMe";
+    const motherboard = cpu.includes("AMD") ? "B650 WiFi ATX" : "B760 WiFi ATX";
+    const psu = `${prefs.psuHeadroom ?? (highEnd ? "850" : "650")}W 80+ Gold`;
+    const caseModel = prefs.formFactor ?? prefs.caseType ?? "Mid tower";
+    const cooler =
+      prefs.thermalsNoise === "Quiet first"
+        ? "Quiet dual tower air cooler"
+        : highEnd
+          ? "240mm AIO liquid cooler"
+          : "Tower air cooler";
+    const total = formatCurrency(Math.max(700, budget));
 
-  const [buildItems, setBuildItems] = useState<BuildItem[]>(fallbackBuild);
-  const [total, setTotal] = useState("$1,499");
+    return {
+      total,
+      buildItems: [
+        { part: "CPU", model: cpu, price: "", note: `Based on ${prefs.cpuPreference ?? "balanced"} preference.`, link: generateAlzaLink("CPU", cpu) },
+        { part: "GPU", model: gpu, price: "", note: `Chosen for ${prefs.displayTarget ?? prefs.gpuTarget ?? "balanced gaming"}.`, link: generateAlzaLink("GPU", gpu) },
+        { part: "RAM", model: ram, price: "", note: "Sized for the selected budget and use case.", link: generateAlzaLink("RAM", ram) },
+        { part: "Storage", model: storage, price: "", note: "Uses your storage preference.", link: generateAlzaLink("SSD", storage) },
+        { part: "Motherboard", model: motherboard, price: "", note: "Compatible board with WiFi.", link: generateAlzaLink("Motherboard", motherboard) },
+        { part: "PSU", model: psu, price: "", note: "Matches your PSU headroom target.", link: generateAlzaLink("PSU", psu) },
+        { part: "Case", model: caseModel, price: "", note: "Matches your preferred form factor.", link: generateAlzaLink("Case", caseModel) },
+        { part: "Cooling", model: cooler, price: "", note: `Tuned for ${prefs.thermalsNoise ?? "balanced"} cooling.`, link: generateAlzaLink("CPU Cooler", cooler) },
+      ],
+    };
+  };
+
+  const fallbackBuild = buildFromPrefs();
+  const [buildItems, setBuildItems] = useState<BuildItem[]>(fallbackBuild.buildItems);
+  const [total, setTotal] = useState(fallbackBuild.total);
 
   const parseAIResult = (text: string): { buildItems: BuildItem[]; total: string } | null => {
     const cleaned = text
@@ -50,7 +93,7 @@ export default function BuildPage() {
           }))
           .filter((b: BuildItem) => b.part && b.model);
         if (mapped.length) {
-          const newTotal = json.total ? String(json.total) : "$0";
+          const newTotal = json.total ? String(json.total) : formatCurrency(0);
           setBuildItems(mapped);
           setTotal(newTotal);
           return { buildItems: mapped, total: newTotal };
@@ -93,7 +136,7 @@ export default function BuildPage() {
         prefs.games && `Games: ${prefs.games}`,
         prefs.resolution && `Resolution: ${prefs.resolution}`,
         prefs.fps && `Target FPS: ${prefs.fps}`,
-        prefs.budget && `Budget: $${Number(prefs.budget).toLocaleString()}`,
+        prefs.budget && `Budget: ${formatCurrency(Number(prefs.budget))}`,
         prefs.caseType && `Case type: ${prefs.caseType}`,
         prefs.prefGlass && "Prefers tempered glass",
         prefs.prefRgb && "Wants RGB",
@@ -116,9 +159,9 @@ export default function BuildPage() {
             {
               role: "user",
               content:
-                "Provide a concise PC parts list based on these preferences:\n" +
+                "Generate a PC parts list that strictly follows these preferences. Do not ignore CPU brand, GPU target, storage, PSU headroom, form factor, thermals, display target, or budget:\n" +
                 parts +
-                "\nReturn JSON like { build: [{ part, model, price, note }], total }. Keep it short.",
+                "\nReturn only valid JSON in this exact shape: {\"build\":[{\"part\":\"CPU\",\"model\":\"...\",\"price\":\"...\",\"note\":\"...\"}],\"total\":\"...\"}. Use EUR prices formatted like 1 500 €. Include CPU, GPU, RAM, Storage, Motherboard, PSU, Case, and Cooling.",
             },
           ],
         }),
@@ -217,7 +260,7 @@ export default function BuildPage() {
                 {prefs.resolution && <div>Resolution: {prefs.resolution}</div>}
                 {prefs.fps && <div>Target FPS: {prefs.fps}</div>}
                 {prefs.budget && (
-                  <div>Budget: ${Number(prefs.budget).toLocaleString()}</div>
+                  <div>Budget: {formatCurrency(Number(prefs.budget))}</div>
                 )}
                 {prefs.caseType && <div>Case type: {prefs.caseType}</div>}
                 {prefs.prefGlass && <div>Prefers tempered glass</div>}

@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -16,15 +15,3 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
-let analytics: ReturnType<typeof getAnalytics> | null = null;
-try {
-  if (typeof window !== "undefined" && window.location.protocol === "https:") {
-    analytics = getAnalytics(app);
-  }
-} catch (error) {
-  console.debug("Firebase Analytics not available:", error);
-}
-
-export { analytics };
-

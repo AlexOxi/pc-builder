@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import TopBar from "../components/TopBar";
 import { useApi } from "../useApi";
 import type { Message } from "../types";
 
 export default function ChatPage() {
-  const navigate = useNavigate();
   const { callApi } = useApi();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -40,16 +39,13 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="bg-slate-900">
+        <TopBar />
+      </div>
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
           <h1 className="text-xl font-semibold">PC Builder AI Chat</h1>
           <div className="flex items-center gap-3 text-xs text-slate-500">
-            <button
-              onClick={() => navigate("/")}
-              className="rounded-md border px-2 py-1 text-slate-600 hover:bg-slate-100"
-            >
-              Back to Home
-            </button>
             <span>Backend proxy: /chat</span>
           </div>
         </div>
