@@ -8,20 +8,27 @@ const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(",")
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
   : ["*"];
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
-  if (allowedOrigins.includes("*") || (origin && allowedOrigins.includes(origin))) {
+  const isAllowed =
+    allowedOrigins.includes("*") || (origin ? allowedOrigins.includes(origin) : false);
+
+  if (isAllowed) {
     res.header("Access-Control-Allow-Origin", origin || "*");
+    res.header("Vary", "Origin");
   }
+
   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
+    return res.sendStatus(204);
   }
+
   next();
 });
 
